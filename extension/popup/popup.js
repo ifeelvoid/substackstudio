@@ -22,7 +22,15 @@ function initializePopup() {
 function setupEventListeners() {
   // Open Dashboard button
   document.getElementById('openDashboard').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ action: 'openDashboard' });
+    console.log('Open Dashboard button clicked');
+    chrome.runtime.sendMessage({ action: 'openDashboard' }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error sending message:', chrome.runtime.lastError);
+        showNotification('Error opening dashboard');
+      } else {
+        console.log('Dashboard open response:', response);
+      }
+    });
   });
 
   // Sync Data button

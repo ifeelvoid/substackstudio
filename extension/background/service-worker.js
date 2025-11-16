@@ -67,15 +67,36 @@ function openDashboard() {
   chrome.storage.local.get(['settings'], (result) => {
     const dashboardUrl = result.settings?.dashboardUrl || DASHBOARD_URL;
 
-    // Check if dashboard is already open
-    chrome.tabs.query({ url: `${dashboardUrl}/*` }, (tabs) => {
-      if (tabs.length > 0) {
+    console.log('Opening dashboard at:', dashboardUrl);
+
+    // Try to find existing dashboard tab
+    chrome.tabs.query({}, (tabs) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error querying tabs:', chrome.runtime.lastError);
+        // Fallback: just open new tab
+        chrome.tabs.create({ url: dashboardUrl });
+        return;
+      }
+
+      const dashboardTab = tabs.find(tab =>
+        tab.url && tab.url.startsWith(dashboardUrl)
+      );
+
+      if (dashboardTab) {
         // Focus existing tab
-        chrome.tabs.update(tabs[0].id, { active: true });
-        chrome.windows.update(tabs[0].windowId, { focused: true });
+        console.log('Focusing existing dashboard tab');
+        chrome.tabs.update(dashboardTab.id, { active: true });
+        chrome.windows.update(dashboardTab.windowId, { focused: true });
       } else {
         // Open new tab
-        chrome.tabs.create({ url: dashboardUrl });
+        console.log('Creating new dashboard tab');
+        chrome.tabs.create({ url: dashboardUrl }, (tab) => {
+          if (chrome.runtime.lastError) {
+            console.error('Error creating tab:', chrome.runtime.lastError);
+          } else {
+            console.log('Dashboard tab created:', tab.id);
+          }
+        });
       }
     });
   });
