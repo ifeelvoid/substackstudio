@@ -1,0 +1,17 @@
+#!/bin/bash
+# Create simple black square PNG icons
+
+create_png() {
+    size=$1
+    # Create a simple black PNG using printf (minimal valid PNG)
+    # This creates a 1x1 black pixel PNG which is valid
+    printf '\x89\x50\x4e\x47\x0d\x0a\x1a\x0a\x00\x00\x00\x0d\x49\x48\x44\x52\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90\x77\x53\xde\x00\x00\x00\x0c\x49\x44\x41\x54\x08\xd7\x63\x60\x60\x60\x00\x00\x00\x04\x00\x01\x27\x6b\xee\x5b\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82' > "icon${size}.png"
+    echo "Created icon${size}.png"
+}
+
+create_png 16
+create_png 32  
+create_png 48
+create_png 128
+
+echo "Icons created! These are placeholder 1x1 black pixels."
