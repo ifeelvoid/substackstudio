@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Substack Studio</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <h1>Substack Studio</h1>
+      <p class="subtitle">Schedule & Analyze</p>
+    </header>
+
+    <div class="popup-content">
+      <!-- Quick Actions -->
+      <section class="quick-actions">
+        <button id="openDashboard" class="btn btn-primary">
+          <span class="icon">📊</span>
+          Open Dashboard
+        </button>
+        <button id="syncData" class="btn btn-secondary">
+          <span class="icon">🔄</span>
+          Sync Data
+        </button>
+      </section>
+
+      <!-- Stats Preview -->
+      <section class="stats-preview">
+        <h2>Quick Stats</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="totalNotes">-</div>
+            <div class="stat-label">Scheduled Notes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="subscribers">-</div>
+            <div class="stat-label">Subscribers</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming Notes -->
+      <section class="upcoming-notes">
+        <h2>Upcoming</h2>
+        <div id="notesList" class="notes-list">
+          <p class="empty-state">No scheduled notes</p>
+        </div>
+      </section>
+
+      <!-- Quick Schedule -->
+      <section class="quick-schedule">
+        <h2>Quick Schedule</h2>
+        <form id="quickScheduleForm">
+          <textarea
+            id="noteContent"
+            placeholder="Enter your note content..."
+            rows="3"
+          ></textarea>
+          <div class="form-row">
+            <input type="date" id="scheduleDate" required>
+            <input type="time" id="scheduleTime" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Schedule Note</button>
+        </form>
+      </section>
+    </div>
+
+    <footer class="popup-footer">
+      <button id="settings" class="btn-link">Settings</button>
+      <span class="version">v1.0.0</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

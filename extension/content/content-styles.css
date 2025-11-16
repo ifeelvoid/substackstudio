@@ -1,0 +1,83 @@
+/* Substack Studio - Content Styles */
+
+.substack-studio-button {
+  transition: all 0.2s ease;
+}
+
+.substack-studio-button:hover {
+  background: #1a1a1a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.substack-studio-button:active {
+  transform: translateY(0);
+}
+
+/* Studio overlay for scheduling */
+.substack-studio-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.substack-studio-modal {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 600px;
+  width: 90%;
+  color: #fff;
+}
+
+.substack-studio-modal h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.substack-studio-modal input,
+.substack-studio-modal textarea {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.substack-studio-modal button {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.substack-studio-modal button:hover {
+  background: #e0e0e0;
+}
+
+.substack-studio-modal button.secondary {
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+}
+
+.substack-studio-modal button.secondary:hover {
+  background: #2a2a2a;
+}

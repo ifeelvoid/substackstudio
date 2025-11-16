@@ -2,6 +2,20 @@
 
 A professional Substack management studio with scheduling, analytics, growth tracking, and performance insights. Built with Next.js, TypeScript, and Tailwind CSS featuring a sleek black and white minimal night mode aesthetic.
 
+## 🎯 Two Ways to Use
+
+### 1. Web Dashboard Only
+Use the standalone web app with demo data for planning and visualization.
+
+### 2. Hybrid System (Recommended)
+**Chrome Extension + Web Dashboard** for full Substack integration:
+- Extension extracts real analytics from Substack
+- Schedule notes with browser notifications
+- Auto-sync between extension and dashboard
+- Real-time data updates
+
+See [Extension README](extension/README.md) for installation instructions.
+
 ## Features
 
 ### 📅 Scheduler
@@ -134,16 +148,70 @@ Click the **Export YAML** or **Export CSV** button in the Notes tab to download 
 
 Click the **Import** button and select a previously exported YAML or CSV file.
 
+## Chrome Extension
+
+### Quick Setup
+
+1. **Install Extension**:
+   ```bash
+   # Generate icons first (see extension/icons/README.md)
+   # Then in Chrome:
+   # 1. Go to chrome://extensions/
+   # 2. Enable "Developer mode"
+   # 3. Click "Load unpacked"
+   # 4. Select the `extension` folder
+   ```
+
+2. **Visit Substack**:
+   - Extension adds a "📊 Studio" button to Substack pages
+   - Click to open the web dashboard
+
+3. **Use Popup**:
+   - Click extension icon for quick scheduling
+   - View stats and upcoming notes
+   - Manual sync with dashboard
+
+### Extension Features
+
+- ✅ Extracts analytics from Substack pages
+- ✅ Schedule notes with notifications
+- ✅ Real-time sync with web dashboard
+- ✅ Chrome storage for offline access
+- ✅ Background alarms for post reminders
+
+See [Extension Documentation](extension/README.md) for detailed setup and usage.
+
+## Project Structure
+
+```
+substackstudio/
+├── app/              # Next.js app (web dashboard)
+├── components/       # React components
+├── lib/              # Utilities and types
+├── extension/        # Chrome extension
+│   ├── popup/       # Extension popup UI
+│   ├── content/     # Content scripts (inject into Substack)
+│   ├── background/  # Service worker (scheduling, sync)
+│   └── icons/       # Extension icons
+└── public/          # Static assets
+```
+
 ## Future Enhancements
 
+### Web Dashboard
 - [ ] AI-powered content analysis
 - [ ] Custom GPT integration for note optimization
-- [ ] Real Substack API integration
 - [ ] Advanced filtering and search
-- [ ] Custom time slots
 - [ ] Note templates
 - [ ] Collaborative features
 - [ ] Mobile responsive improvements
+
+### Chrome Extension
+- [ ] OAuth integration with Substack
+- [ ] Enhanced analytics parsing
+- [ ] Bulk scheduling
+- [ ] Cross-browser support (Firefox, Edge)
+- [ ] Auto-post compliance mode
 
 ## License
 
