@@ -131,29 +131,72 @@ function scheduleNoteAlarm(noteData) {
 
 // Listen for alarms
 chrome.alarms.onAlarm.addListener((alarm) => {
+  // Handle periodic sync
+  if (alarm.name === 'periodicSync') {
+    chrome.storage.local.get(['settings'], (result) => {
+      if (result.settings?.syncEnabled) {
+        syncDataToDashboard(() => {
+          console.log('Periodic sync completed');
+        });
+      }
+    });
+    return;
+  }
+
+  // Handle scheduled notes
   console.log('Alarm triggered:', alarm.name);
 
-  chrome.storage.local.get(['alarms'], (result) => {
+  chrome.storage.local.get(['alarms', 'settings'], (result) => {
     const alarmData = result.alarms?.[alarm.name];
+    const settings = result.settings || {};
 
     if (alarmData) {
-      // Show notification
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: '../icons/icon128.png',
-        title: 'Substack Studio - Time to Post!',
-        message: `It's time to publish: "${alarmData.noteData.content}"`,
-        priority: 2,
-        buttons: [
-          { title: 'Open Substack' },
-          { title: 'Dismiss' }
-        ]
-      });
+      const autoPostEnabled = settings.autoPostEnabled !== false; // Default true
 
-      // Open Substack in new tab
-      chrome.tabs.create({
-        url: 'https://substack.com/publish'
-      });
+      if (autoPostEnabled) {
+        // AUTO-POST MODE: Open Notes page and auto-post
+        console.log('Auto-posting note...');
+
+        chrome.tabs.create({
+          url: 'https://substack.com/notes'
+        }, (tab) => {
+          // Wait for tab to load, then send auto-post message
+          chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+            if (tabId === tab.id && info.status === 'complete') {
+              chrome.tabs.onUpdated.removeListener(listener);
+
+              // Give page a moment to fully render
+              setTimeout(() => {
+                chrome.tabs.sendMessage(tabId, {
+                  action: 'autoPost',
+                  data: alarmData.noteData
+                }, (response) => {
+                  if (chrome.runtime.lastError) {
+                    console.error('Auto-post error:', chrome.runtime.lastError);
+                    // Show manual notification as fallback
+                    showManualPostNotification(alarmData);
+                  } else if (response && response.success) {
+                    console.log('Auto-post successful!');
+                    chrome.notifications.create({
+                      type: 'basic',
+                      iconUrl: '../icons/icon128.png',
+                      title: 'Substack Studio - Posted!',
+                      message: `Successfully posted: "${alarmData.noteData.content}"`,
+                      priority: 1
+                    });
+                  } else {
+                    // Auto-post failed, show manual notification
+                    showManualPostNotification(alarmData);
+                  }
+                });
+              }, 2000);
+            }
+          });
+        });
+      } else {
+        // MANUAL MODE: Just show notification
+        showManualPostNotification(alarmData);
+      }
 
       // Clean up alarm
       const alarms = result.alarms;
@@ -162,6 +205,24 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     }
   });
 });
+
+function showManualPostNotification(alarmData) {
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: '../icons/icon128.png',
+    title: 'Substack Studio - Time to Post!',
+    message: `It's time to publish: "${alarmData.noteData.content}"`,
+    priority: 2,
+    buttons: [
+      { title: 'Open Substack' },
+      { title: 'Dismiss' }
+    ]
+  });
+
+  chrome.tabs.create({
+    url: 'https://substack.com/notes'
+  });
+}
 
 function getScheduledNotes(sendResponse) {
   chrome.storage.local.get(['scheduledNotes'], (result) => {
@@ -213,16 +274,4 @@ function clearAllData(sendResponse) {
 // Periodic sync to dashboard (every 5 minutes)
 chrome.alarms.create('periodicSync', {
   periodInMinutes: 5
-});
-
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'periodicSync') {
-    chrome.storage.local.get(['settings'], (result) => {
-      if (result.settings?.syncEnabled) {
-        syncDataToDashboard(() => {
-          console.log('Periodic sync completed');
-        });
-      }
-    });
-  }
 });

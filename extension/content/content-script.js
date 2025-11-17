@@ -171,6 +171,14 @@
           sendResponse({ success: true });
           break;
 
+        case 'autoPost':
+          this.autoPostNote(request.data).then(result => {
+            sendResponse(result);
+          }).catch(error => {
+            sendResponse({ success: false, error: error.message });
+          });
+          break;
+
         case 'getPageInfo':
           sendResponse({
             success: true,
@@ -183,6 +191,101 @@
         default:
           sendResponse({ success: false, error: 'Unknown action' });
       }
+    }
+
+    async autoPostNote(noteData) {
+      console.log('Auto-posting note:', noteData);
+
+      try {
+        // Wait for page to be ready
+        await this.waitForElement('body', 5000);
+
+        // Find compose button/textarea (multiple selectors for different Substack UIs)
+        const selectors = [
+          'textarea[placeholder*="Share"]',
+          'textarea[placeholder*="note"]',
+          'textarea[placeholder*="write"]',
+          '[data-testid="note-composer"]',
+          '[contenteditable="true"]',
+          'textarea.composer',
+          '.composer textarea'
+        ];
+
+        let composer = null;
+        for (const selector of selectors) {
+          composer = document.querySelector(selector);
+          if (composer) break;
+        }
+
+        if (!composer) {
+          throw new Error('Could not find Note composer. Please open Notes page first.');
+        }
+
+        // Fill in content
+        if (composer.tagName === 'TEXTAREA') {
+          composer.value = noteData.content;
+          composer.dispatchEvent(new Event('input', { bubbles: true }));
+          composer.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+          composer.textContent = noteData.content;
+          composer.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        // Wait a bit for UI to update
+        await this.sleep(500);
+
+        // Find and click Post button (multiple selectors)
+        const buttonSelectors = [
+          'button:not([disabled])[type="submit"]',
+          'button:not([disabled])[data-testid="post-button"]',
+          'button:not([disabled]).post-button',
+          'button:not([disabled])',
+        ];
+
+        let postButton = null;
+        for (const selector of buttonSelectors) {
+          const buttons = document.querySelectorAll(selector);
+          for (const button of buttons) {
+            const text = button.textContent.toLowerCase();
+            if (text.includes('post') || text.includes('publish') || text.includes('share')) {
+              postButton = button;
+              break;
+            }
+          }
+          if (postButton) break;
+        }
+
+        if (!postButton) {
+          throw new Error('Could not find Post button. Note may need to be posted manually.');
+        }
+
+        // Click the post button
+        postButton.click();
+
+        // Wait to verify posting
+        await this.sleep(2000);
+
+        console.log('Note posted successfully');
+        return { success: true, message: 'Note posted successfully!' };
+
+      } catch (error) {
+        console.error('Auto-post error:', error);
+        throw error;
+      }
+    }
+
+    async waitForElement(selector, timeout = 5000) {
+      const startTime = Date.now();
+      while (Date.now() - startTime < timeout) {
+        const element = document.querySelector(selector);
+        if (element) return element;
+        await this.sleep(100);
+      }
+      throw new Error(`Element ${selector} not found within ${timeout}ms`);
+    }
+
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     scheduleNote(noteData) {

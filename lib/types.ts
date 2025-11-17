@@ -1,9 +1,15 @@
+export type ContentTheme = 'educational' | 'promotional' | 'personal' | 'curated' | 'interactive' | 'announcement';
+
 export interface SubstackNote {
   id: string;
   content: string;
   scheduledDate: Date | null;
   scheduledTime: string;
-  status: 'draft' | 'scheduled' | 'published';
+  status: 'draft' | 'scheduled' | 'published' | 'failed';
+  theme?: ContentTheme;
+  timezone?: string;
+  autoPost?: boolean;
+  retryCount?: number;
   metrics?: {
     reactions: number;
     restacks: number;
@@ -45,3 +51,25 @@ export type TimeSlot = {
 };
 
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+
+export interface EngagementHeatmap {
+  dayOfWeek: number; // 0-6
+  hour: number; // 0-23
+  engagement: number; // Average engagement score
+  count: number; // Number of posts at this time
+}
+
+export interface DripModeConfig {
+  enabled: boolean;
+  postsPerWeek: number;
+  preferredTimes: { day: number; hour: number }[];
+  themeRotation: boolean;
+  autoFillFromDrafts: boolean;
+}
+
+export interface BulkUploadResult {
+  success: boolean;
+  imported: number;
+  failed: number;
+  errors: string[];
+}
