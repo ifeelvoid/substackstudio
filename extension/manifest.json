@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Substack Studio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Schedule, analyze, and optimize your Substack with powerful analytics and scheduling tools",
   "permissions": [
     "storage",
